@@ -13,12 +13,19 @@ A build is reproducibly successful if and only if "If it succeeds to builds once
 
 * Get data from a no-longer-available resource: `[tag:unavailable_page]`
 
-```console test-session=unavailable_page
+```console
 $ nix build .\#unreproduciblePackages.x86_64-linux.unavailablePage
 error: unable to download 'https://vine.co/MyUserName': HTTP error 404
 ```
 
-* Get data from randomness
+* Get data from randomness: `[tag:random_success]`
+
+This build sometimes fails and sometimes passes:
+
+```
+$ nix build .\#unreproduciblePackages.x86_64-linux.randomSuccess
+```
+
 
 ## Reproducible failures
 

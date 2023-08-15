@@ -17,6 +17,19 @@
           url = "https://vine.co/MyUserName";
           sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
         };
+        # [ref:random_success]
+        randomSuccess = pkgs.stdenv.mkDerivation {
+          name = "random-success";
+          unpackPhase = "true";
+          buildCommand = ''
+            if [[ "$RANDOM" > 16000 ]]
+            then
+              exit 1
+            else
+              echo "true" > $out
+            fi
+          '';
+        };
       };
 
       checks.${system}.pre-commit = pre-commit-hooks.lib.${system}.run {
