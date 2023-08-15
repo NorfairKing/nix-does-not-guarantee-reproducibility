@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Nix does not guarantee reproducibility";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-23.05";

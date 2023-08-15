@@ -1,4 +1,4 @@
-# Nix is not reproducible
+# Nix does not guarantee reproducibility
 
 This repository serves to show that Nix does not guarantee that builds are reproducible *such that we may learn and improve our builds*.
 
