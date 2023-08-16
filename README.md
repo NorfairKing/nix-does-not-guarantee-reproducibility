@@ -1,11 +1,15 @@
 # Nix does not guarantee reproducibility
 
-This repository serves to show that Nix does not guarantee that builds are reproducible *such that we may learn and improve our builds*.
+This repository serves to show that Nix does not guarantee that builds are reproducible **such that we may learn and improve our builds**.
 
 Some of the following problems are not solvable.
 In such a case there may be ways to mitigate them.
 However, it is important that we **don't lie** about them when evangelising Nix.
 
+
+What follows are examples of ways in which one might produce builds that nix does not guarantee reproducibility for.
+More concrete definitions of "reproducibility" will be outlined as necessary.
+Each counterexample will have a `[tag:` that points to a build that you can try out in this repository's flake.
 
 ## Reproducible successes
 
@@ -13,16 +17,35 @@ However, it is important that we **don't lie** about them when evangelising Nix.
 
 A build is reproducibly successful if and only if "If it succeeds to builds once, it will always succeed to build." holds.
 
-#### Counterexample: Resource no longer available
+### Counterexamples
+
+#### Resource no longer available
 
 `[tag:unavailable_page]`
+
+Fixed-output derivations produce the same result every time *if they succeed* (and hashing is not broken).
+However, there's nothing to guarantee that the output can indeed be reproduced at all.
+Sometimes resources on the internet become unavailable for reasons entirely beyond our control.
+
+In this build, for example, we try to fetch a web page that is no longer available (a vine user profile).
 
 ```console
 $ nix build .\#unreproduciblePackages.x86_64-linux.unavailablePage
 error: unable to download 'https://vine.co/MyUserName': HTTP error 404
 ```
 
-* Get data from randomness: `[tag:random_success]`
+This build would have succeeded once upon a time, but will no longer succeed.
+
+
+A real-world example of where this happens quite often is old versions of LaTeX libraries.
+If you write a book in LaTeX and package it with nix, you need to keep the build up to date in order to be able to build the book again in the future.
+
+One possible mitigation would be to use Nix' caching mechanism to make sure that you transparently cache all required resources in-house.
+This can work as long as you can share this cache with anyone else who wants to perform the same build, and you don't even need to trust the cache because you have specified the hash of the result.
+
+#### Random failure
+
+`[tag:random_success]`
 
 This build sometimes fails and sometimes passes:
 
