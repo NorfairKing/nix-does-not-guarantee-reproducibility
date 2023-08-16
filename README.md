@@ -126,23 +126,46 @@ However, this could not fix the issue either because of the randomness problem o
 
 A build has reproducible results if and only if "If it succeeds to build, the result will be bit-for-bit identical to any other successful build".
 
-(You might think that a version of this definition could be "If it succeeds to build, the result will be practically equivalent to any other successful build".
-However, adversarially speaking, this is not a weaker definition but an equivalent definition.)
+You might think that a version of this definition could be "If it succeeds to build, the result will be practically equivalent to any other successful build".
+However, adversarially speaking, this is not a weaker definition but instead an equivalent definition.
 
-### Counterexample
+Indeed. It can never be clear whether a non-bit-for-bit-equal build is "functionally equivalent", so we *must* assume that they are not.
 
-* Produce randomness: `[tag:random_output]`
+### Counterexamples
+
+#### Producing randomness
+
+`[tag:random_output]`
+
+A build might produce randomness as part of its output.
+As such, the output could be different across builds.
+
+In the following build, a different number is produced every time, and we can see (with `--rebuild`) that Nix can tell that it's not a deterministic build:
 
 ``` console
 $ nix build .\#unreproduciblePackages.x86_64-linux.randomOutput --rebuild
 error: derivation '/nix/store/aisn9vhwqlkay45zj2p3v6h9yhjb6ll2-random-output.drv' may not be deterministic: output '/nix/store/s6y0k5kdmiwy6jrv7bqjgsgrhd21s2my-random-output' differs
 ```
 
-* Have results that depend on multithreaded scheduling
+A real-world example of this is a build that produces a test "secret" key.
+
+Nix _could_ try mitigate this problem by not making randomness available to non-fixed-output derivations, but _should not_ do that because that could comprise a backdoor in builds.
+
+#### Producing output based on multithreading
+
+`[tag:multithreaded_output]`
+
+Some builds produce different output based on how threads are scheduled.
+The GHC Haskell compiler does this, for example.
+The following is a build of a Haskell package (just about any Haskell package will do):
 
 ``` console
 $ nix build .\#unreproduciblePackages.x86_64-linux.multithreadedOutput --rebuild
 error: derivation '/nix/store/iqxgnqjm57qpfxnlncghirapqm6gg0y8-validity-0.12.0.1.drv' may not be deterministic: output '/nix/store/ibkkj6xxdhdgw3rn1bs6iizyq6ivq0jx-validity-0.12.0.1' differs
 ```
 
-GHC is not deterministic because its output depends on how threads were scheduled during compilation.
+This is [a longstanding GHC issue](https://gitlab.haskell.org/ghc/ghc/-/issues/12935) and not at all unique to GHC.
+As long as [GHC is bug-free](https://gitlab.haskell.org/ghc/ghc/-/issues/), this *shouldn't* matter for results.
+
+Nix *could* mitigate this issue by running all builds on a single core, but that *should not* because that would slow down builds massively.
+It also wouldn't necessarily help because running a build on one core does not prevent GHC from spawning multiple green threads anyway.

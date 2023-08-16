@@ -30,6 +30,7 @@
         randomOutput = pkgs.runCommand "random-output" { } ''
           echo $RANDOM > $out
         '';
+        # [ref:multithreaded_output]
         multithreadedOutput = pkgs.haskellPackages.validity;
       };
 
