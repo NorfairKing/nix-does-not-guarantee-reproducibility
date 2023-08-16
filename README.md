@@ -30,7 +30,7 @@ Sometimes resources on the internet become unavailable for reasons entirely beyo
 In this build, for example, we try to fetch a web page that is no longer available (a vine user profile).
 
 ```console
-$ nix build .\#unreproduciblePackages.x86_64-linux.unavailablePage
+$ nix build .#unreproduciblePackages.x86_64-linux.unavailablePage
 error: unable to download 'https://vine.co/MyUserName': HTTP error 404
 ```
 
@@ -47,12 +47,27 @@ This can work as long as you can share this cache with anyone else who wants to 
 
 `[tag:random_success]`
 
-This build sometimes fails and sometimes passes:
+When builds use randomness, whether they succeed or not may depend on that randomness.
+In such a case, the build will sometimes fail where previously it would have passed.
 
-```
-$ nix build .\#unreproduciblePackages.x86_64-linux.randomSuccess
-```
+In this build, for example, we access randomness to fail about half of the time:
 
+``` console
+$ nix build .#unreproduciblePackages.x86_64-linux.randomSuccess
+error: builder for '/nix/store/p8a5a8fijg7qh464c0mvvh5yzndsx7vm-random-success.drv' failed with exit code 1
+$ echo $?
+1
+
+$ nix build .#unreproduciblePackages.x86_64-linux.randomSuccess
+$ echo $?
+0
+```
+ 
+A real-world example of where this might happen is builds that run randomised property tests without a fixed seed.
+Indeed when you run property tests, it is important to choose a fixed-seed in your builds.
+
+Nix _could_ try mitigate this problem by not making randomness available to non-fixed-output derivations, but _should not_ do that because that would mean that nix builds could never generate secrets.
+_Perhaps Nix could make a new type of alternative build for producing randomness so that this issue could be compartmentalised, but it is not clear if that would be an effective solution to any real problem._
 
 ## Reproducible failures
 
@@ -63,6 +78,12 @@ A build fails reproducibly if and only if "If it fails to builds once, it will a
 ### Counterexample
 
 * Have builds occasionally use _much_ more memory
+
+### Counterexample
+
+* Timing-related issues in benchmarks
+
+A real-world example could be a (naive) benchmarking build that fails if the software that it builds is 
 
 ## Reproducible results
 
