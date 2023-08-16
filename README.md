@@ -2,6 +2,10 @@
 
 This repository serves to show that Nix does not guarantee that builds are reproducible *such that we may learn and improve our builds*.
 
+Some of the following problems are not solvable.
+In such a case there may be ways to mitigate them.
+However, it is important that we **don't lie** about them when evangelising Nix.
+
 
 ## Reproducible successes
 
@@ -9,9 +13,9 @@ This repository serves to show that Nix does not guarantee that builds are repro
 
 A build is reproducibly successful if and only if "If it succeeds to builds once, it will always succeed to build." holds.
 
-### Counterexample
+#### Counterexample: Resource no longer available
 
-* Get data from a no-longer-available resource: `[tag:unavailable_page]`
+`[tag:unavailable_page]`
 
 ```console
 $ nix build .\#unreproduciblePackages.x86_64-linux.unavailablePage
