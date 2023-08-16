@@ -23,7 +23,8 @@ error: unable to download 'https://vine.co/MyUserName': HTTP error 404
 This build sometimes fails and sometimes passes:
 
 ```
-$ nix build .\#unreproduciblePackages.x86_64-linux.randomSuccess
+$ nix build .\#unreproduciblePackages.x86_64-linux.randomSuccess --rebuild
+error: derivation '/nix/store/aisn9vhwqlkay45zj2p3v6h9yhjb6ll2-random-output.drv' may not be deterministic: output '/nix/store/s6y0k5kdmiwy6jrv7bqjgsgrhd21s2my-random-output' differs
 ```
 
 
@@ -48,5 +49,10 @@ However, adversarially speaking, this is not a weaker definition but an equivale
 
 ### Counterexample
 
-* Produce randomness 
+* Produce randomness: `[tag:random_output]`
+
+``` console
+$ nix build .\#unreproduciblePackages.x86_64-linux.randomOutput
+```
+
 * Have results that depend on multithreaded scheduling
