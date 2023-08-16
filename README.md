@@ -11,6 +11,26 @@ What follows are examples of ways in which one might produce builds that nix doe
 More concrete definitions of "reproducibility" will be outlined as necessary.
 Each counterexample will have a `[tag:` that points to a build that you can try out in this repository's flake.
 
+
+
+# Conclusion
+
+The strongest claim I want to make about how Nix works is:
+
+> Nix does the opposite of what you would do if you were deliberately trying to fuck things up.
+
+In other words: Nix is the best chance I have to do builds in sane way.
+
+Any claim similar to "Nix makes builds reproducible" or "You can rely on nix builds" are evidently (see below) _false_.
+
+
+
+<sup>
+<sub>
+(I put the conclusion up here so that you wouldn't miss it at the bottom of this page.)
+</sub>
+</sup>
+
 ## Reproducible successes
 
 ### Definition
@@ -75,15 +95,30 @@ _Perhaps Nix could make a new type of alternative build for producing randomness
 
 A build fails reproducibly if and only if "If it fails to builds once, it will always fail to build." holds.
 
-### Counterexample
+### Counterexamples
 
-* Have builds occasionally use _much_ more memory
+#### Benchmarks
 
-### Counterexample
+`No example build yet.`
+
+When (naively) running a benchmark in a nix build, and failing if the benchmarked software is not fast enough, you will find that the build succeeds (or not) depending on how powerful the build machine is.
+Indeed, the build might pass on a beefy machine while failing on a laptop.
 
 * Timing-related issues in benchmarks
 
-A real-world example could be a (naive) benchmarking build that fails if the software that it builds is 
+A real-world example could be a (naive) benchmarking build that fails if the software that it builds is.
+
+I don't know of any way that Nix might mitigate this issue.
+
+#### Resource usage
+
+`No example build, for ethical reasons.`
+
+Some (all?) builds will fail if run on a machine with insufficient resources.
+Indeed. Builds need some amount of memory and some amount of disk space to succeed.
+
+Nix _could maybe_ mitigate this issue by learning about the resource requirements that builds have and fail early.
+However, this could not fix the issue either because of the randomness problem outlined in a previous section.
 
 ## Reproducible results
 
