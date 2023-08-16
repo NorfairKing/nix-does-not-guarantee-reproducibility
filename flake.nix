@@ -30,6 +30,7 @@
         randomOutput = pkgs.runCommand "random-output" { } ''
           echo $RANDOM > $out
         '';
+        multithreadedOutput = pkgs.haskellPackages.validity;
       };
 
       checks.${system}.pre-commit = pre-commit-hooks.lib.${system}.run {
